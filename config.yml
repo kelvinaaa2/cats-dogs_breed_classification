@@ -1,0 +1,9 @@
+
+Data_Pipeline:
+  MODE : 'TRAIN' # Valid / Test
+  IMG_SIZE : 224
+  TRANS_MEAN : [0.485, 0.456, 0.406]
+  TRANS_STD : [0.229, 0.224, 0.225]
+
+
+
