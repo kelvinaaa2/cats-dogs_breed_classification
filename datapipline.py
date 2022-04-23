@@ -4,15 +4,19 @@ import yaml
 
 import torch
 import torch.nn
-from torchvision import datasets, transforms as T, models
+from torchvision import datasets, models, transforms as T
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
-class Data_Pipeline():
+
+class DataPipeline:
     def __init__(self, config):
+        self.train_dir = config['Data_Pipeline']['TRAIN_DIR']
+        self.valid_dir = config['Data_Pipeline']['VALID_DIR']
         self.mode = config['Data_Pipeline']['MODE']
         self.mean = config['Data_Pipeline']['TRANS_MEAN']
         self.std = config['Data_Pipeline']['TRANS_STD']
+        self.batch_size = config['Data_Pipeline']['BATCH_SIZE']
 
     def transformation(self):
         normalize = T.Normalize(mean=self.mean, std=self.std)
@@ -31,13 +35,29 @@ class Data_Pipeline():
         return transform
 
     def get_data_loader(self):
-        normalize = T.Normalize(mean=[0.485, 0.456, 0.406],
-                                         std=[0.229, 0.224, 0.225])
+        normalize = T.Normalize(mean=self.mean,
+                                std=self.std)
         train_transform = T.Compose([T.RandomRotation(30),
-                                              T.Resize(224),
-                                              T.CenterCrop(224),
-                                              T.RandomHorizontalFlip(),
-                                              normalize])
+                                     T.Resize(224),
+                                     T.CenterCrop(224),
+                                     T.RandomHorizontalFlip(),
+                                     normalize])
+
+        valid_transform = T.Compose([T.Resize(225),
+                                     T.CenterCrop(224),
+                                     T.ToTensor(),
+                                     normalize])
+
+        train_data = datasets.ImageFolder(self.train_dir, transform=train_transform)
+        valid_data = datasets.ImageFolder(self.valid_dir, transform=valid_transform)
+
+        train_loader = torch.utils.data.Dataloader(train_data, batch_size=self.batch_size)
+        valid_loader = torch.utils.data.Dataloader(train_data, batch_size=self.batch_size)
+
+        return train_loader, valid_loader, train_data, valid_data
+
+
+
 
 
 
