@@ -1,31 +1,33 @@
 
 Data_Pipeline:
-
+  # Directory
   TRAIN_DIR :
   TEST_DIR :
-
-  MODE : 'TRAIN' # Valid / Test
-
+  # Training mode
+  MODE : 'TRAIN' # [VALID, TEST]
   # Dataset
   IMG_SIZE : 224
   TRANS_MEAN : [0.485, 0.456, 0.406]
   TRANS_STD : [0.229, 0.224, 0.225]
-
   # Dataloader
   BATCH_SIZE : 16
 
 
 MODEL:
-
   # hidden layers
   HIDDENS : [512, 256, 64]
-
+  # Drop out 
+  DROPOUT : 0.1
   # number of outputs
-  OUTPUTS :
-
+  OUTPUTS : 
   # pretrained model [resnet50,
   PRETRAINED : 'resnet50'
-
+  
+TRAINING:
+  # Training details
+  EPOCH : 50
+  LR : 1e-3
+  DEVICE : 'cuda'
 
 
 
