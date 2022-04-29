@@ -51,8 +51,8 @@ class DataPipeline:
         train_data = datasets.ImageFolder(self.train_dir, transform=train_transform)
         valid_data = datasets.ImageFolder(self.valid_dir, transform=valid_transform)
 
-        train_loader = torch.utils.data.Dataloader(train_data, batch_size=self.batch_size)
-        valid_loader = torch.utils.data.Dataloader(train_data, batch_size=self.batch_size)
+        train_loader = torch.utils.data.DataLoader(train_data, batch_size=self.batch_size)
+        valid_loader = torch.utils.data.DataLoader(train_data, batch_size=self.batch_size)
 
         return train_loader, valid_loader, train_data, valid_data
 
