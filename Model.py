@@ -4,7 +4,6 @@ from torchvision import models
 
 
 class BreedClassifier(nn.Module):
-
     def __init__(self, config):
         super().__init__()
 
