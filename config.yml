@@ -28,6 +28,14 @@ TRAINING:
   EPOCH : 50
   LR : 1e-3
   DEVICE : 'cuda'
+  
+  # Settings
+  MODE : 'train'
+
+  # Directory
+  TRAIN_DIR : 'C:\DogBreed\train_dir'
+  MODEL_DIR : 'C:\DogBreed\model'
+
 
 
 

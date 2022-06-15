@@ -31,6 +31,7 @@ class Solver:
         steps = 0 
         running_loss = 0
         model_loss = 0
+        model_acc = 0
         
         data_loader = self.train_dataloader
         
@@ -66,8 +67,18 @@ class Solver:
             if model_loss == 0:
                 model_loss += test_loss
                 model_acc += accuracy
-                torch.save(model)
+                torch.save(model.state_dict(), f'model_{str(e).pt}')
+            else:
+                if model_loss >= test_loss:
+                    model_loss = test_loss
+                    model_acc = accuracy
+                    torch.save(model.state_dict(), f'model_{str(e)}.pt')
 
+            running_loss = 0
+            # Set model back to training mode
+            model.train()
+
+        return model, epoch_step
 
     def validation(self):
         test_loss = 0
@@ -101,8 +112,15 @@ class Solver:
 
         return test_loss, accuracy, confusion
 
-            
-            
+
+if __name__ == '__main__':
+    from data_pipeline import DataPipeline
+    import argparse
+    import yaml
+    
+    solver = Solver()
+    res = solver.train
+
             
         
             
