@@ -1,7 +1,8 @@
 from Model import BreedClassifier
-
+from sklearn.metrics import confusion_matrix
 import os
 import torch
+from torch import optim
 import torch.nn as nn 
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -12,17 +13,21 @@ class Solver:
         self.train_dataloader = train_dataloader
         self.test_dataloader = test_dataloader
         self.model = model
-        self.criterion = nn.NLLloss()
+        self.criterion = nn.NLLLoss()
         # self.img_size = 
         
         self.epoch = config['TRAINING']['EPOCH']
         self.lr = config['TRAINING']['LR']
         
         # Freeze pretrained model param
-        for param in self.model.features.parameters():
-            param.require_grad = False
+        try:
+            for param in self.model.features.parameters():
+                param.require_grad = False
+        except:
+            for param in self.model.pretrained.parameters():
+                param.require_grad = False
         
-        self.optimizer = nn.optim.Adam(self.model.parameters()
+        self.optimizer = optim.Adam(self.model.parameters()
                                        , lr=config['TRAINING']['LR'])
         # lr_scheduler = None
         self.model.to(device)
@@ -57,28 +62,28 @@ class Solver:
             with torch.no_grad():
                 test_loss, accuracy, confusion = self.validation()
             # Print the validation details
-            print("Epoch: {}/{} - ".format(e + 1, self.epochs),
+            print("Epoch: {}/{} - ".format(e + 1, self.epoch),
                   "Training Loss: {:.3f} - ".format(running_loss / steps + 1),
                   "Validation Loss: {:.3f} - ".format(test_loss / len(self.test_dataloader)),
                   "\nValidation Accuracy: {:.3f} -".format(accuracy / len(self.test_dataloader)),
-                  "lr: {}".format(optimizer.param_groups[0]['lr']))
+                  "lr: {}".format(self.optimizer.param_groups[0]['lr']))
             print(f'\n{confusion}')
             # Save model based on validation performance
             if model_loss == 0:
                 model_loss += test_loss
                 model_acc += accuracy
-                torch.save(model.state_dict(), f'model_{str(e).pt}')
+                torch.save(self.model.state_dict(), f'model_{str(e)}.pt')
             else:
                 if model_loss >= test_loss:
                     model_loss = test_loss
                     model_acc = accuracy
-                    torch.save(model.state_dict(), f'model_{str(e)}.pt')
+                    torch.save(self.model.state_dict(), f'model_{str(e)}.pt')
 
             running_loss = 0
             # Set model back to training mode
-            model.train()
+            self.model.train()
 
-        return model, epoch_step
+        return self.model
 
     def validation(self):
         test_loss = 0
@@ -103,9 +108,9 @@ class Solver:
             accuracy += equality.type(torch.FloatTensor).mean()
 
             pred.append(ps.max(dim=1)[1])
-            label.append(label.data)
+            label.append(labels.data)
 
-        pred = troch.cat(pred).tolist()
+        pred = torch.cat(pred).tolist()
         label = torch.cat(label).tolist()
 
         confusion = confusion_matrix(label, pred)

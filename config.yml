@@ -1,8 +1,9 @@
 
 Data_Pipeline:
   # Directory
-  TRAIN_DIR :
-  TEST_DIR :
+  TRAIN_DIR : 'C:\DogBreed\splited_image\train'
+  VALID_DIR : 'C:\DogBreed\splited_image\val'
+  TEST_DIR : 'C:\DogBreed\splited_image\test'
   # Training mode
   MODE : 'TRAIN' # [VALID, TEST]
   # Dataset
@@ -19,14 +20,14 @@ MODEL:
   # Drop out 
   DROPOUT : 0.1
   # number of outputs
-  OUTPUTS : 
+  OUTPUTS : 120
   # pretrained model [resnet50,
   PRETRAINED : 'resnet50'
   
 TRAINING:
   # Training details
   EPOCH : 50
-  LR : 1e-3
+  LR : 0.001
   DEVICE : 'cuda'
   
   # Settings

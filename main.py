@@ -1,7 +1,12 @@
-# This is a sample Python script.
+import os
+import argparse
+import yaml
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+from solver import Solver
+from data_pipeline import DataPipeline
+from Model import BreedClassifier
+from torch.backends import cudnn
+
 
 def make_train_directory(config):
     # Create directories if not exist.
@@ -15,15 +20,18 @@ def main(config):
     assert config['TRAINING']['MODE'] in ['train', 'test']
 
     cudnn.benchmark = True
-
-
-    solver = Solver(config, get_loader(config))
-    print('{} is started'.format(config['TRAINING_CONFIG']['MODE']))
-    if config['TRAINING_CONFIG']['MODE'] == 'train':
+    # Define train and valid data
+    train_loader, valid_loader, _, _ = DataPipeline(config).get_data_loader()
+    # Define Model
+    model = BreedClassifier(config)
+    # Start training
+    solver = Solver(config, train_loader, valid_loader, model)
+    print('{} is started'.format(config['TRAINING']['MODE']))
+    if config['TRAINING']['MODE'] == 'train':
         solver.train()
-    elif config['TRAINING_CONFIG']['MODE'] == 'test':
-        solver.test()
-    print('{} is finished'.format(config['TRAINING_CONFIG']['MODE']))
+    elif config['TRAINING']['MODE'] == 'test':
+        pass
+    print('{} is finished'.format(config['TRAINING']['MODE']))
 
 
 if __name__ == '__main__':

@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 from torchvision import models
 
 
@@ -25,12 +26,12 @@ class NNClassifier(nn.Module):
     def __init__(self, n_in, config):
         super().__init__()
 
-        self.hidden_layers = nn.ModuleList([nn.Linear(n_in, self.hidden)])
-        layer_sizes = zip(config['MODEL']['HIDDEN'][:-1], config['MODEL']['HIDDEN'][1:])
+        self.hidden_layers = nn.ModuleList([nn.Linear(n_in, config['MODEL']['HIDDENS'][0])])
+        layer_sizes = zip(config['MODEL']['HIDDENS'][:-1], config['MODEL']['HIDDENS'][1:])
         self.hidden_layers.extend([nn.Linear(h1, h2) for h1, h2 in layer_sizes])
 
         self.dropout = nn.Dropout(p=config['MODEL']['DROPOUT'])
-        self.output = nn.Linear(hidden_layers[-1], config['MODEL']['OUTPUTS'])
+        self.output = nn.Linear(config['MODEL']['HIDDENS'][-1], config['MODEL']['OUTPUTS'])
 
     def forward(self, x):
         for linear in self.hidden_layers:
